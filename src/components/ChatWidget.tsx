@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import ChatMessage from "./ChatMessage";
 import FeedbackDialog from "./FeedbackDialog";
 import CategoryMenu from "./CategoryMenu";
+import { findRelevantModule, findRelevantFAQ, educationModules } from "@/data/educationContent";
 
 export interface Message {
   id: string;
@@ -61,9 +62,6 @@ const ChatWidget = () => {
 
   const getDemoResponse = (input: string) => {
     const lower = input.toLowerCase();
-    
-    // Import education content dynamically
-    const { findRelevantModule, findRelevantFAQ, educationModules } = require("@/data/educationContent");
     
     // Check for FAQ matches first
     const faqMatch = findRelevantFAQ(input);
