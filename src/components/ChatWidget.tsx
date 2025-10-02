@@ -61,13 +61,65 @@ const ChatWidget = () => {
 
   const getDemoResponse = (input: string) => {
     const lower = input.toLowerCase();
-    if (lower.includes("học") || lower.includes("education")) {
-      return "Tuyệt vời! Hãy bắt đầu với những kiến thức cơ bản về thị trường chứng khoán. Chúng ta sẽ tìm hiểu về:\n\n📚 Cổ phiếu là gì?\n💰 Cách thức hoạt động của TTCK\n📊 Các loại hình đầu tư\n🎯 Quản lý rủi ro\n\nBạn muốn bắt đầu từ chủ đề nào?";
+    
+    // Import education content dynamically
+    const { findRelevantModule, findRelevantFAQ, educationModules } = require("@/data/educationContent");
+    
+    // Check for FAQ matches first
+    const faqMatch = findRelevantFAQ(input);
+    if (faqMatch) {
+      return `**${faqMatch.question}**\n\n${faqMatch.answer}\n\n_Từ module: ${faqMatch.module}_`;
     }
-    if (lower.includes("tcinvest") || lower.includes("nền tảng")) {
-      return "TCInvest là nền tảng giao dịch chứng khoán trực tuyến giúp bạn:\n\n✅ Mở tài khoản dễ dàng\n💼 Giao dịch mọi lúc, mọi nơi\n📈 Theo dõi danh mục đầu tư\n🎓 Học hỏi từ chuyên gia\n\nBạn cần hỗ trợ về tính năng cụ thể nào?";
+    
+    // Check for module matches
+    const moduleMatch = findRelevantModule(input);
+    if (moduleMatch) {
+      let response = `📚 **${moduleMatch.title}**\n\n${moduleMatch.content}`;
+      
+      if (moduleMatch.faqs.length > 0) {
+        response += `\n\n**Câu hỏi thường gặp:**\n`;
+        moduleMatch.faqs.slice(0, 2).forEach((faq: any, idx: number) => {
+          response += `\n${idx + 1}. ${faq.question}`;
+        });
+      }
+      
+      return response;
     }
-    return "Cảm ơn câu hỏi của bạn! Tôi đang học hỏi để hiểu rõ hơn về nhu cầu của bạn. Bạn có thể cho tôi biết thêm chi tiết không?";
+    
+    // General education intro
+    if (lower.includes("học") || lower.includes("education") || lower.includes("bắt đầu")) {
+      return `🎓 **Chào mừng đến với chương trình Học tập TCInvest!**
+
+Tôi sẽ hướng dẫn bạn qua ${educationModules.length} module kiến thức:
+
+1️⃣ Tổng quan Thị trường Chứng khoán
+2️⃣ Cổ phiếu là gì?
+3️⃣ Các loại sản phẩm đầu tư
+4️⃣ Cách sử dụng TCInvest
+5️⃣ Phân tích Cơ bản
+6️⃣ Phân tích Kỹ thuật
+7️⃣ Quản trị rủi ro
+8️⃣ Thực hành đầu tư
+9️⃣ Lộ trình học tập
+
+Bạn muốn tìm hiểu về chủ đề nào trước? Hoặc hỏi tôi bất kỳ câu hỏi nào!`;
+    }
+    
+    // TCInvest platform questions
+    if (lower.includes("tcinvest") || lower.includes("nền tảng") || lower.includes("platform")) {
+      return `💼 **TCInvest - Nền tảng giao dịch của bạn**
+
+TCInvest giúp bạn:
+✅ Mở tài khoản trực tuyến qua eKYC
+💰 Nạp/rút tiền liên kết ngân hàng
+📊 Đặt lệnh LO, ATO, ATC, MP
+📈 Theo dõi danh mục real-time
+📱 Giao dịch mọi lúc, mọi nơi
+
+Bạn muốn tìm hiểu chi tiết về tính năng nào?`;
+    }
+    
+    return "Cảm ơn câu hỏi! Tôi có thể giúp bạn về:\n• Kiến thức đầu tư chứng khoán\n• Cách sử dụng TCInvest\n• Phân tích cơ bản và kỹ thuật\n• Quản lý rủi ro\n\nBạn muốn biết về chủ đề nào?";
   };
 
   const handleFeedback = (messageId: string, feedback: "useful" | "not-useful") => {
